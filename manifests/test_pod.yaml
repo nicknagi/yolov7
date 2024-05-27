@@ -6,9 +6,26 @@ spec:
   containers:
   - name: test-yolo-container
     image: nekhilnagia16/yolov7:latest
-    command: ["sleep", "3600"]
+    command: ["python3", "detect.py"]
+    args:
+    - --weights=yolov7.pt
+    - --conf=0.7
+    - --save-txt
+    - --source=/mnt/nfs/video-data/webcam_stream_1716819989.mp4
+    - --nosave
+    - --project=/mnt/nfs/video-data/runs/detect
+    - --name=webcam_stream_1716819989
     resources:
       limits:
         nvidia.com/gpu: 1
+    volumeMounts:
+        - name: video-data-nfs
+          mountPath: "/mnt/nfs/video-data"
   restartPolicy: Never
   runtimeClassName: nvidia
+  imagePullSecrets:
+        - name: regcred
+  volumes:
+      - name: video-data-nfs
+        persistentVolumeClaim:
+          claimName: video-data-claim
